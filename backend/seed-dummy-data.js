@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+require('dotenv').config();
 
 async function seedData() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/service-management');
+    await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to DB for dummy seeding...');
 
     const db = mongoose.connection.db;
