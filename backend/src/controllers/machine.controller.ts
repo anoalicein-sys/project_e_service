@@ -73,3 +73,46 @@ export const getMachineById = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Server error retrieving machine' });
   }
 };
+
+// @desc    Update a machine
+// @route   PATCH /api/machines/:id
+// @access  Private (Admin, Manager)
+export const updateMachine = async (req: AuthRequest, res: Response) => {
+  try {
+    const { model, type, status, location } = req.body;
+    const machine = await Machine.findById(req.params.id);
+
+    if (!machine) {
+      return res.status(404).json({ message: 'Machine not found' });
+    }
+
+    if (req.user?.role === 'Customer' && machine.customerId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    if (model) machine.model = model;
+    if (type) machine.type = type;
+    if (status) machine.status = status;
+    if (location) machine.location = location;
+
+    const updatedMachine = await machine.save();
+    res.json(updatedMachine);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating machine' });
+  }
+};
+
+// @desc    Delete a machine
+// @route   DELETE /api/machines/:id
+// @access  Private (Admin)
+export const deleteMachine = async (req: AuthRequest, res: Response) => {
+  try {
+    const machine = await Machine.findById(req.params.id);
+    if (!machine) return res.status(404).json({ message: 'Machine not found' });
+    
+    await machine.deleteOne();
+    res.json({ message: 'Machine removed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting machine' });
+  }
+};

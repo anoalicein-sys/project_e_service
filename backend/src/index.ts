@@ -9,6 +9,9 @@ import authRoutes from './routes/auth.routes';
 import machineRoutes from './routes/machine.routes';
 import serviceRequestRoutes from './routes/service-request.routes';
 import serviceReportRoutes from './routes/service-report.routes';
+import userRoutes from './routes/user.routes';
+import feedbackRoutes from './routes/feedback.routes';
+import auditRoutes from './routes/audit.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
@@ -58,7 +61,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/machines', machineRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/service-reports', serviceReportRoutes);
-// app.use('/api/feedback', feedbackRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/audit', auditRoutes);
 
 // Global Error Handling Middleware
 app.use(errorHandler);

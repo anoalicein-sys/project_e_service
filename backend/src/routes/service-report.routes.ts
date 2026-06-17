@@ -3,7 +3,8 @@ import {
   createServiceReport, 
   updateServiceReport, 
   approveServiceReport, 
-  getServiceReportPdf 
+  getServiceReportPdf,
+  getServiceReports
 } from '../controllers/service-report.controller';
 import { validate } from '../middleware/validate.middleware';
 import { requireAuth, requireRoles } from '../middleware/auth.middleware';
@@ -16,6 +17,7 @@ router.use(requireAuth);
 router.use(auditLogger('ServiceReport'));
 
 router.route('/')
+  .get(getServiceReports)
   .post(requireRoles(['Engineer', 'Admin']), validate(createServiceReportSchema), createServiceReport);
 
 router.route('/:id')

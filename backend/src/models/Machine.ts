@@ -11,6 +11,7 @@ const machineSchema = new mongoose.Schema({
   model: { type: String, required: true, trim: true },
   serialNo: { type: String, required: true, unique: true, trim: true, index: true },
   installDate: { type: Date, required: true },
+  location: { type: String, default: 'Unassigned', trim: true },
   status: { 
     type: String, 
     enum: ['Active', 'Inactive', 'Under Maintenance', 'Decommissioned'], 

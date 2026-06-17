@@ -120,7 +120,7 @@ function EngineerView() {
   return (
     <div className="grid gap-6 md:grid-cols-2 max-w-4xl">
       <DashboardCard 
-        href="/dashboard/assignments" 
+        href="/dashboard/tickets" 
         title="My Assignments" 
         description="Access open job sheets and compile maintenance reports." 
         icon={Wrench} 
@@ -145,7 +145,7 @@ function CustomerView() {
         icon={PackageSearch} 
       />
       <DashboardCard 
-        href="/dashboard/requests/new" 
+        href="/dashboard/tickets" 
         title="File a Request" 
         description="Log operational anomalies and request dispatch support." 
         icon={PlusCircle} 

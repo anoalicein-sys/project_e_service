@@ -4,7 +4,8 @@ const workTimeSchema = new mongoose.Schema({
   timeFrom: { type: Date, required: true },
   timeUpto: { type: Date, required: true },
   workTime: { type: Number, required: true }, // in minutes or hours
-  engineerName: { type: String, required: true }
+  engineerName: { type: String, required: true },
+  remark: { type: String, default: "" }
 }, { _id: false });
 
 const serviceReportSchema = new mongoose.Schema({
@@ -35,6 +36,12 @@ const serviceReportSchema = new mongoose.Schema({
   },
   jobTitle: { type: String, required: true },
   jobCategory: { type: String, required: true },
+  plantName: { type: String, default: "" },
+  plantAddress: { type: String, default: "" },
+  attName: { type: String, default: "" },
+  serviceType: { type: String, default: 'On Site' },
+  engineerSignature: { type: String, default: "" },
+  customerSignature: { type: String, default: "" },
   chargesType: { 
     type: String, 
     enum: ['Warranty', 'AMC', 'Chargeable', 'FOC'], 

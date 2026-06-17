@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMachines, createMachine, getMachineById } from '../controllers/machine.controller';
+import { getMachines, createMachine, getMachineById, updateMachine, deleteMachine } from '../controllers/machine.controller';
 import { validate } from '../middleware/validate.middleware';
 import { requireAuth, requireRoles } from '../middleware/auth.middleware';
 import { auditLogger } from '../middleware/audit.middleware';
@@ -16,6 +16,8 @@ router.route('/')
   .post(requireRoles(['Admin', 'Manager']), validate(createMachineSchema), createMachine);
 
 router.route('/:id')
-  .get(getMachineById);
+  .get(getMachineById)
+  .patch(requireRoles(['Admin', 'Manager']), updateMachine)
+  .delete(requireRoles(['Admin']), deleteMachine);
 
 export default router;

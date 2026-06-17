@@ -3,6 +3,28 @@ import ServiceReport from '../models/ServiceReport';
 import Machine from '../models/Machine';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { generateServiceReportPDF } from '../utils/pdfGenerator';
+import { asyncHandler } from '../utils/asyncHandler';
+
+// @desc    Get all service reports
+// @route   GET /api/service-reports
+// @access  Private (Scoped by role)
+export const getServiceReports = asyncHandler(async (req: AuthRequest, res: Response) => {
+  let query = {};
+  
+  if (req.user?.role === 'Customer') {
+    query = { customerId: req.user.id };
+  } else if (req.user?.role === 'Engineer') {
+    query = { engineerId: req.user.id };
+  }
+
+  const reports = await ServiceReport.find(query)
+    .populate('customerId', 'name email')
+    .populate('machineId', 'model serialNo')
+    .populate('engineerId', 'name email')
+    .populate('requestId', 'issueDescription status');
+
+  res.json(reports);
+});
 
 // @desc    Create a drafted service report
 // @route   POST /api/service-reports

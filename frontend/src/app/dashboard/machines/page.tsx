@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,13 +16,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { RegisterMachineSheet } from "./components/register-machine-sheet";
+import { EditMachineSheet } from "./components/edit-machine-sheet";
+import { ViewMachineSheet } from "./components/view-machine-sheet";
 
 export default function MachinesPage() {
   const { data: session } = useSession();
   const role = session?.user?.role;
 
   const { data: machines, isLoading, error } = useQuery({
-    queryKey: ["machines"],
+    queryKey: ["machines", session?.user?.id],
     queryFn: async () => {
       const response = await api.get("/api/machines");
       return response.data;
@@ -32,14 +36,20 @@ export default function MachinesPage() {
 
   return (
     <div className="p-8 bg-gray-50 dark:bg-zinc-950 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Machine Registry</h1>
-          <p className="text-zinc-500 text-sm">Manage and view hardware assets.</p>
+      <div className="mb-6">
+        <Link href="/dashboard" className="inline-flex items-center text-sm text-zinc-500 hover:text-blue-600 mb-4 transition-colors">
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Back to Dashboard
+        </Link>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Machine Registry</h1>
+            <p className="text-zinc-500 text-sm">Manage and view hardware assets.</p>
+          </div>
+          {(role === "Admin" || role === "Manager") && (
+            <RegisterMachineSheet />
+          )}
         </div>
-        {(role === "Admin" || role === "Manager") && (
-          <RegisterMachineSheet />
-        )}
       </div>
 
       <div className="bg-white dark:bg-zinc-900 rounded-lg shadow border border-gray-200 dark:border-zinc-800">
@@ -71,8 +81,11 @@ export default function MachinesPage() {
                     {machine.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">View</Button>
+                <TableCell className="text-right whitespace-nowrap">
+                  {(role === "Admin" || role === "Manager") && (
+                    <EditMachineSheet machine={machine} />
+                  )}
+                  <ViewMachineSheet machine={machine} />
                 </TableCell>
               </TableRow>
             ))}

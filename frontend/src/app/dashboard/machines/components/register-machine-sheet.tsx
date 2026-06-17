@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const machineSchema = z.object({
   customerId: z.string().min(24, "Invalid Customer ID").optional(),
@@ -36,9 +43,19 @@ export function RegisterMachineSheet() {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
+  const { data: customers, isLoading: customersLoading } = useQuery({
+    queryKey: ["customers"],
+    queryFn: async () => {
+      const response = await api.get("/api/users?role=Customer");
+      return response.data;
+    },
+    enabled: open && (session?.user?.role === "Admin" || session?.user?.role === "Manager"),
+  });
+
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<MachineFormValues>({
@@ -74,9 +91,7 @@ export function RegisterMachineSheet() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button>Register New Machine</Button>
-      </SheetTrigger>
+      <SheetTrigger render={<Button>Register New Machine</Button>} />
       <SheetContent className="sm:max-w-[500px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Register Machine</SheetTitle>
@@ -88,12 +103,23 @@ export function RegisterMachineSheet() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
           {(session?.user?.role === "Admin" || session?.user?.role === "Manager") && (
             <div className="space-y-2">
-              <Label htmlFor="customerId">Customer ID</Label>
-              <Input
-                id="customerId"
-                placeholder="Enter 24-char Object ID"
-                {...register("customerId")}
-              />
+              <Label>Select Customer</Label>
+              <input type="hidden" {...register("customerId")} />
+              <Select onValueChange={(value: any) => setValue("customerId", value, { shouldValidate: true })}>
+                <SelectTrigger>
+                  <SelectValue placeholder={customersLoading ? "Loading customers..." : "Select a customer"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {customers?.map((customer: any) => (
+                    <SelectItem key={customer._id} value={customer._id}>
+                      {customer.name} ({customer.email})
+                    </SelectItem>
+                  ))}
+                  {customers?.length === 0 && (
+                    <SelectItem value="none" disabled>No customers found</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
               {errors.customerId && (
                 <p className="text-sm text-red-500">{errors.customerId.message}</p>
               )}
