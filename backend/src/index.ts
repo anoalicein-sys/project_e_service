@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes';
 import machineRoutes from './routes/machine.routes';
 import serviceRequestRoutes from './routes/service-request.routes';
 import serviceReportRoutes from './routes/service-report.routes';
+import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -58,6 +59,9 @@ app.use('/api/machines', machineRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/service-reports', serviceReportRoutes);
 // app.use('/api/feedback', feedbackRoutes);
+
+// Global Error Handling Middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

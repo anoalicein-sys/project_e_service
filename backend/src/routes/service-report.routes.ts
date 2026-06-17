@@ -7,11 +7,13 @@ import {
 } from '../controllers/service-report.controller';
 import { validate } from '../middleware/validate.middleware';
 import { requireAuth, requireRoles } from '../middleware/auth.middleware';
+import { auditLogger } from '../middleware/audit.middleware';
 import { createServiceReportSchema, updateServiceReportSchema } from '../schemas/service-report.schema';
 
 const router = express.Router();
 
 router.use(requireAuth);
+router.use(auditLogger('ServiceReport'));
 
 router.route('/')
   .post(requireRoles(['Engineer', 'Admin']), validate(createServiceReportSchema), createServiceReport);

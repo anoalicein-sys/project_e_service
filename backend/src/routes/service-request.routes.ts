@@ -2,11 +2,13 @@ import express from 'express';
 import { getServiceRequests, createServiceRequest, assignEngineer } from '../controllers/service-request.controller';
 import { validate } from '../middleware/validate.middleware';
 import { requireAuth, requireRoles } from '../middleware/auth.middleware';
+import { auditLogger } from '../middleware/audit.middleware';
 import { createServiceRequestSchema, assignEngineerSchema } from '../schemas/service-request.schema';
 
 const router = express.Router();
 
 router.use(requireAuth);
+router.use(auditLogger('ServiceRequest'));
 
 router.route('/')
   .get(getServiceRequests)
